@@ -1,0 +1,66 @@
+name: 'App Deploy'
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  build:
+    name: Build Apps
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repo
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.x'
+
+    - name: Restore NuGet packages
+      shell: bash
+      run: |
+        dotnet restore .
+
+    - name: Build solution
+      shell: bash
+      run: |
+        dotnet build . -c Release
+
+    - name: Create FunctionApp artifact - In-Proc App
+      shell: bash
+      run: |
+        pushd InProcApp
+        dotnet publish . -c Release -o published
+        popd
+
+    - name: Zip FunctionApp artifact - In-Proc App
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r ip.zip published
+        working-directory: InProcApp
+
+    - name: Create FunctionApp artifact - Out-of-Proc App
+      shell: bash
+      run: |
+        pushd OutOfProcApp
+        dotnet publish . -c Release -o published
+        popd
+
+    - name: Zip FunctionApp artifact - Out-of-Proc App
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r oop.zip published
+        working-directory: OutOfProcApp
+
+    - name: Release FunctionApp artifacts to GitHub
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        files: |
+          InProcApp/published/ip.zip
+          OutOfProcApp/published/oop.zip
