@@ -1,0 +1,10 @@
+{
+  // "azureFunctions.deploySubpath": "InProcApp/bin/Release/net6.0/publish",
+  // "azureFunctions.projectSubpath": "InProcApp",
+  "azureFunctions.deploySubpath": "OutOfProcApp/bin/Release/net6.0/publish",
+  "azureFunctions.projectSubpath": "OutOfProcApp",
+  "azureFunctions.projectLanguage": "C#",
+  "azureFunctions.projectRuntime": "~4",
+  "azureFunctions.preDeployTask": "publish (functions)",
+  "debug.internalConsoleOptions": "neverOpen"
+}
