@@ -37,12 +37,6 @@ jobs:
         dotnet publish . -c Release -o published
         popd
 
-    - name: Zip FunctionApp artifact - In-Proc App
-      uses: montudor/action-zip@v1
-      with:
-        args: zip -qq -r ip.zip published
-        working-directory: InProcApp
-
     - name: Create FunctionApp artifact - Out-of-Proc App
       shell: bash
       run: |
@@ -50,11 +44,50 @@ jobs:
         dotnet publish . -c Release -o published
         popd
 
-    - name: Zip FunctionApp artifact - Out-of-Proc App
-      uses: montudor/action-zip@v1
+    - name: Upload FunctionApp artifact - In-Proc App
+      uses: actions/upload-artifact@v2
       with:
-        args: zip -qq -r oop.zip published
-        working-directory: OutOfProcApp
+        name: ip
+        path: InProcApp/published
+
+    - name: Upload FunctionApp artifact - Out-of-Proc App
+      uses: actions/upload-artifact@v2
+      with:
+        name: oop
+        path: InProcApp/published
+
+  release:
+    name: Release Apps
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download FunctionApp artifact - In-Proc App
+      uses: actions/download-artifact@v2
+      with:
+        name: ip
+        path: published/ip
+
+    - name: Download FunctionApp artifact - Out-of-Proc App
+      uses: actions/download-artifact@v2
+      with:
+        name: oop
+        path: published/oop
+
+    - name: Zip FunctionApp artifacts
+      shell: bash
+      run: |
+        cd published/ip
+        zip -qq -r ip.zip .
+        cd $GITHUB_WORKSPACE
+
+        cd published/oop
+        zip -qq -r oop.zip .
+        cd $GITHUB_WORKSPACE
+
+        mv published/ip/ip.zip published/ip.zip
+        mv published/oop/oop.zip published/oop.zip
 
     - name: Release FunctionApp artifacts to GitHub
       uses: "marvinpinto/action-automatic-releases@latest"
@@ -62,5 +95,5 @@ jobs:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: false
         files: |
-          InProcApp/published/ip.zip
-          OutOfProcApp/published/oop.zip
+          published/ip.zip
+          published/oop.zip
