@@ -1,0 +1,252 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1318.3566",
+      "templateHash": "10125004948521004191"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "apis": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "azure-ip",
+          "displayName": "Azure IP",
+          "description": "Azure in-proc API",
+          "path": "azip",
+          "suffix": "ip"
+        },
+        {
+          "name": "azure-oop",
+          "displayName": "Azure OOP",
+          "description": "Azure out-of-proc API",
+          "path": "azoop",
+          "suffix": "oop"
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "apimapis",
+        "count": "[length(parameters('apis'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('ApiManagementApi_{0}', parameters('apis')[copyIndex()].path)]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[parameters('name')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "apiMgmtApiName": {
+            "value": "[parameters('apis')[copyIndex()].name]"
+          },
+          "apiMgmtApiDisplayName": {
+            "value": "[parameters('apis')[copyIndex()].displayName]"
+          },
+          "apiMgmtApiDescription": {
+            "value": "[parameters('apis')[copyIndex()].description]"
+          },
+          "apiMgmtApiPath": {
+            "value": "[parameters('apis')[copyIndex()].path]"
+          },
+          "apiMgmtApiValue": {
+            "value": "[format('https://fncapp-{0}-{1}.azurewebsites.net/api/openapi/v3.json', parameters('name'), parameters('apis')[copyIndex()].suffix)]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.4.1318.3566",
+              "templateHash": "12324595370340985571"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "apiMgmtApiType": {
+              "type": "string",
+              "defaultValue": "http",
+              "allowedValues": [
+                "http",
+                "soap",
+                "websocket",
+                "graphql"
+              ]
+            },
+            "apiMgmtApiName": {
+              "type": "string"
+            },
+            "apiMgmtApiDisplayName": {
+              "type": "string"
+            },
+            "apiMgmtApiDescription": {
+              "type": "string"
+            },
+            "apiMgmtApiPath": {
+              "type": "string"
+            },
+            "apiMgmtApiSubscriptionRequired": {
+              "type": "bool",
+              "defaultValue": false
+            },
+            "apiMgmtApiFormat": {
+              "type": "string",
+              "defaultValue": "openapi+json-link",
+              "allowedValues": [
+                "swagger-json",
+                "swagger-link-json",
+                "openapi",
+                "openapi+json",
+                "openapi+json-link",
+                "openapi-link",
+                "wadl-link-json",
+                "wadl-xml",
+                "wsdl",
+                "wsdl-link",
+                "graphql-link"
+              ]
+            },
+            "apiMgmtApiValue": {
+              "type": "string"
+            },
+            "apiMgmtApiPolicyFormat": {
+              "type": "string",
+              "defaultValue": "xml",
+              "allowedValues": [
+                "rawxml",
+                "rawxml-link",
+                "xml",
+                "xml-link"
+              ]
+            },
+            "apiMgmtApiPolicyValue": {
+              "type": "string",
+              "defaultValue": "<!--\r\n  IMPORTANT:\r\n  - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n  - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n  - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n  - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.\r\n  - To remove a policy, delete the corresponding policy statement from the policy document.\r\n  - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n  - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n  - Policies are applied in the order of their appearance, from the top down.\r\n  - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>"
+            },
+            "apiMgmtProductName": {
+              "type": "string",
+              "defaultValue": "default"
+            }
+          },
+          "variables": {
+            "apiManagement": {
+              "groupName": "[format('rg-{0}', parameters('name'))]",
+              "name": "[format('apim-{0}', parameters('name'))]",
+              "location": "[parameters('location')]",
+              "type": "[parameters('apiMgmtApiType')]",
+              "apiName": "[parameters('apiMgmtApiName')]",
+              "displayName": "[parameters('apiMgmtApiDisplayName')]",
+              "description": "[parameters('apiMgmtApiDescription')]",
+              "path": "[parameters('apiMgmtApiPath')]",
+              "subscriptionRequired": "[parameters('apiMgmtApiSubscriptionRequired')]",
+              "format": "[parameters('apiMgmtApiFormat')]",
+              "value": "[parameters('apiMgmtApiValue')]",
+              "policyFormat": "[parameters('apiMgmtApiPolicyFormat')]",
+              "policyValue": "[parameters('apiMgmtApiPolicyValue')]",
+              "productName": "[parameters('apiMgmtProductName')]"
+            },
+            "operations": [
+              {
+                "name": "swagger-json",
+                "displayName": "swagger.json",
+                "method": "GET",
+                "urlTemplate": "/swagger.json"
+              },
+              {
+                "name": "swagger-ui",
+                "displayName": "swagger/ui",
+                "method": "GET",
+                "urlTemplate": "/swagger/ui"
+              }
+            ]
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ApiManagement/service/apis",
+              "apiVersion": "2021-08-01",
+              "name": "[format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName)]",
+              "properties": {
+                "type": "[variables('apiManagement').type]",
+                "displayName": "[variables('apiManagement').displayName]",
+                "description": "[variables('apiManagement').description]",
+                "path": "[variables('apiManagement').path]",
+                "subscriptionRequired": "[variables('apiManagement').subscriptionRequired]",
+                "format": "[variables('apiManagement').format]",
+                "value": "[variables('apiManagement').value]"
+              }
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/apis/policies",
+              "apiVersion": "2021-08-01",
+              "name": "[format('{0}/policy', format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName))]",
+              "properties": {
+                "format": "[variables('apiManagement').policyFormat]",
+                "value": "[variables('apiManagement').policyValue]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', split(format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName), '/')[0], split(format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName), '/')[1])]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "apimapioperations",
+                "count": "[length(variables('operations'))]"
+              },
+              "type": "Microsoft.ApiManagement/service/apis/operations",
+              "apiVersion": "2021-08-01",
+              "name": "[format('{0}/{1}', format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName), variables('operations')[copyIndex()].name)]",
+              "properties": {
+                "displayName": "[variables('operations')[copyIndex()].displayName]",
+                "method": "[variables('operations')[copyIndex()].method]",
+                "urlTemplate": "[variables('operations')[copyIndex()].urlTemplate]",
+                "templateParameters": [],
+                "responses": []
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', split(format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName), '/')[0], split(format('{0}/{1}', variables('apiManagement').name, variables('apiManagement').apiName), '/')[1])]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('apiManagement').groupName), 'Microsoft.ApiManagement/service', variables('apiManagement').name)]"
+            },
+            "name": {
+              "type": "string",
+              "value": "[variables('apiManagement').name]"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
