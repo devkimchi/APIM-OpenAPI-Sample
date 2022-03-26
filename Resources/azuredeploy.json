@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "8319540809296015085"
+      "templateHash": "1726506454141440387"
     }
   },
   "parameters": {
@@ -59,6 +59,10 @@
     },
     "apiManagementPublisherEmail": {
       "type": "string"
+    },
+    "deploymentScriptAzureCliVersion": {
+      "type": "string",
+      "defaultValue": "2.33.1"
     }
   },
   "resources": [
@@ -90,6 +94,9 @@
           },
           "apiManagementPublisherEmail": {
             "value": "[parameters('apiManagementPublisherEmail')]"
+          },
+          "deploymentScriptAzureCliVersion": {
+            "value": "[parameters('deploymentScriptAzureCliVersion')]"
           }
         },
         "template": {
@@ -99,7 +106,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1318.3566",
-              "templateHash": "811052174973482253"
+              "templateHash": "17862965962615501312"
             }
           },
           "parameters": {
@@ -136,6 +143,21 @@
                 "In-Proc App",
                 "Out-of-Proc App"
               ]
+            },
+            "deploymentScriptPrincipalType": {
+              "type": "string",
+              "defaultValue": "ServicePrincipal",
+              "allowedValues": [
+                "Device",
+                "ForeignGroup",
+                "Group",
+                "ServicePrincipal",
+                "User"
+              ]
+            },
+            "deploymentScriptAzureCliVersion": {
+              "type": "string",
+              "defaultValue": "2.33.1"
             }
           },
           "resources": [
@@ -1491,6 +1513,140 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', 'ApiManagement_main')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2020-10-01",
+              "name": "UserAssignedIdentity_main",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "name": {
+                    "value": "[parameters('name')]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "principalType": {
+                    "value": "[parameters('deploymentScriptPrincipalType')]"
+                  },
+                  "azureCliVersion": {
+                    "value": "[parameters('deploymentScriptAzureCliVersion')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.4.1318.3566",
+                      "templateHash": "13640062272335714076"
+                    }
+                  },
+                  "parameters": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "string",
+                      "defaultValue": "[resourceGroup().location]"
+                    },
+                    "principalType": {
+                      "type": "string",
+                      "defaultValue": "ServicePrincipal",
+                      "allowedValues": [
+                        "Device",
+                        "ForeignGroup",
+                        "Group",
+                        "ServicePrincipal",
+                        "User"
+                      ]
+                    },
+                    "azureCliVersion": {
+                      "type": "string",
+                      "defaultValue": "2.33.1"
+                    }
+                  },
+                  "variables": {
+                    "userAssignedIdentity": {
+                      "name": "[format('spn-{0}-deployer', parameters('name'))]",
+                      "location": "[parameters('location')]"
+                    },
+                    "roleAssignment": {
+                      "name": "[guid(resourceGroup().id, 'contributor')]",
+                      "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+                      "principalType": "[parameters('principalType')]"
+                    },
+                    "deploymentScript": {
+                      "name": "[format('depscrpt-{0}', parameters('name'))]",
+                      "containerGroupName": "[format('contgrp-{0}', parameters('name'))]",
+                      "location": "[parameters('location')]",
+                      "azureCliVersion": "[parameters('azureCliVersion')]",
+                      "scriptUri": "https://raw.githubusercontent.com/devkimchi/APIM-OpenAPI-Sample/main/Resources/setup-apim.sh"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                      "apiVersion": "2018-11-30",
+                      "name": "[variables('userAssignedIdentity').name]",
+                      "location": "[variables('userAssignedIdentity').location]"
+                    },
+                    {
+                      "type": "Microsoft.Authorization/roleAssignments",
+                      "apiVersion": "2020-10-01-preview",
+                      "name": "[variables('roleAssignment').name]",
+                      "properties": {
+                        "roleDefinitionId": "[variables('roleAssignment').roleDefinitionId]",
+                        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentity').name)).principalId]",
+                        "principalType": "[variables('roleAssignment').principalType]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentity').name)]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deploymentScripts",
+                      "apiVersion": "2020-10-01",
+                      "name": "[variables('deploymentScript').name]",
+                      "location": "[variables('deploymentScript').location]",
+                      "kind": "AzureCLI",
+                      "identity": {
+                        "type": "UserAssigned",
+                        "userAssignedIdentities": {
+                          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentity').name))]": {}
+                        }
+                      },
+                      "properties": {
+                        "azCliVersion": "[variables('deploymentScript').azureCliVersion]",
+                        "containerSettings": {
+                          "containerGroupName": "[variables('deploymentScript').containerGroupName]"
+                        },
+                        "environmentVariables": [
+                          {
+                            "name": "RESOURCE_NAME",
+                            "value": "[variables('deploymentScript').name]"
+                          }
+                        ],
+                        "primaryScriptUri": "[variables('deploymentScript').scriptUri]",
+                        "retentionInterval": "P1D"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Authorization/roleAssignments', variables('roleAssignment').name)]",
+                        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentity').name)]"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'ApiManagement_main')]",
+                "fncapps"
               ]
             }
           ]
