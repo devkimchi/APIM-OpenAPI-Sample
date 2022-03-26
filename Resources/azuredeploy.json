@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "11077735874350040767"
+      "templateHash": "5845647226993557034"
     }
   },
   "parameters": {
@@ -106,7 +106,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1318.3566",
-              "templateHash": "9801683905350723799"
+              "templateHash": "9320546102610281526"
             }
           },
           "parameters": {
@@ -1545,7 +1545,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.4.1318.3566",
-                      "templateHash": "9043941834767811475"
+                      "templateHash": "8900621931460713850"
                     }
                   },
                   "parameters": {
@@ -1584,8 +1584,9 @@
                     },
                     "deploymentScript": {
                       "name": "[format('depscrpt-{0}', parameters('name'))]",
-                      "containerGroupName": "[format('contgrp-{0}', parameters('name'))]",
                       "location": "[parameters('location')]",
+                      "resourceName": "[parameters('name')]",
+                      "containerGroupName": "[format('contgrp-{0}', parameters('name'))]",
                       "azureCliVersion": "[parameters('azureCliVersion')]",
                       "scriptUri": "https://raw.githubusercontent.com/devkimchi/APIM-OpenAPI-Sample/main/Resources/setup-apim.sh"
                     }
@@ -1630,7 +1631,7 @@
                         "environmentVariables": [
                           {
                             "name": "RESOURCE_NAME",
-                            "value": "[variables('deploymentScript').name]"
+                            "value": "[variables('deploymentScript').resourceName]"
                           }
                         ],
                         "primaryScriptUri": "[variables('deploymentScript').scriptUri]",

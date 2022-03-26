@@ -39,8 +39,9 @@ resource role 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
 
 var deploymentScript = {
     name: 'depscrpt-${name}'
-    containerGroupName: 'contgrp-${name}'
     location: location
+    resourceName: name
+    containerGroupName: 'contgrp-${name}'
     azureCliVersion: azureCliVersion
     scriptUri: 'https://raw.githubusercontent.com/devkimchi/APIM-OpenAPI-Sample/main/Resources/setup-apim.sh'
 }
@@ -66,7 +67,7 @@ resource ds 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
       environmentVariables: [
           {
               name: 'RESOURCE_NAME'
-              value: deploymentScript.name
+              value: deploymentScript.resourceName
           }
       ]
       primaryScriptUri: deploymentScript.scriptUri
