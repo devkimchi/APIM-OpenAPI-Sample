@@ -6,7 +6,7 @@ Param(
 
     [string]
     [Parameter(Mandatory=$false)]
-    $Location = "koeracentral",
+    $Location = "koreacentral",
 
     [string]
     [Parameter(Mandatory=$false)]
