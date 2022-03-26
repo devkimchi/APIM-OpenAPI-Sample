@@ -14,6 +14,15 @@ param functionOpenApiDocTitles array = [
     'In-Proc App'
     'Out-of-Proc App'
 ]
+@allowed([
+    'Device'
+    'ForeignGroup'
+    'Group'
+    'ServicePrincipal'
+    'User'
+])
+param deploymentScriptPrincipalType string = 'ServicePrincipal'
+param deploymentScriptAzureCliVersion string = '2.33.1'
 
 module apim './provision-apimanagement.bicep' = {
     name: 'ApiManagement_main'
@@ -38,3 +47,17 @@ module fncapps './provision-functionapp.bicep' = [for (suffix, i) in suffixes: {
         functionOpenApiDocTitle: functionOpenApiDocTitles[i]
     }
 }]
+
+module uai './deploymentScript.bicep' = {
+    name: 'UserAssignedIdentity_main'
+    dependsOn: [
+        apim
+        fncapps
+    ]
+    params: {
+        name: name
+        location: location
+        principalType: deploymentScriptPrincipalType
+        azureCliVersion: deploymentScriptAzureCliVersion
+    }
+}

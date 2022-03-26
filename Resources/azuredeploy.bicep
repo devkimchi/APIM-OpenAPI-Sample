@@ -43,6 +43,7 @@ param location string = 'Korea Central'
 
 param apiManagementPublisherName string
 param apiManagementPublisherEmail string
+param deploymentScriptAzureCliVersion string = '2.33.1'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
     name: 'rg-${name}'
@@ -57,5 +58,6 @@ module resources './main.bicep' = {
         location: location
         apiManagementPublisherName: apiManagementPublisherName
         apiManagementPublisherEmail: apiManagementPublisherEmail
+        deploymentScriptAzureCliVersion: deploymentScriptAzureCliVersion
     }
 }
