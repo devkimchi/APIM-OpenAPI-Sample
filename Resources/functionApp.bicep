@@ -50,6 +50,7 @@ param functionWorkerRuntime string = 'dotnet'
     'v7'
 ])
 param functionWorkerVersion string = 'v6.0'
+param functionOpenApiDocTitle string = 'OpenAPI'
 
 var storage = {
     id: storageAccountId
@@ -82,6 +83,8 @@ var functionApp = {
     environment: functionEnvironment
     extensionVersion: replace(functionExtensionVersion, 'v', '~')
     workerRuntime: functionWorkerRuntime
+    docTitle: functionOpenApiDocTitle
+    hostNames: 'https://fncapp-${name}${(suffix == '' ? '' : '-${suffix}')}.azurewebsites.net/api'
 }
 
 resource fncapp 'Microsoft.Web/sites@2021-02-01' = {
@@ -135,6 +138,15 @@ resource fncapp 'Microsoft.Web/sites@2021-02-01' = {
                 {
                     name: 'WEBSITE_CONTENTSHARE'
                     value: functionApp.name
+                }
+                // OpenAPI
+                {
+                    name: 'OpenApi__DocTitle'
+                    value: functionApp.docTitle
+                }
+                {
+                    name: 'OpenApi__HostNames'
+                    value: functionApp.hostNames
                 }
             ]
         }

@@ -6,6 +6,14 @@ param suffixes array = [
 ]
 param apiManagementPublisherName string
 param apiManagementPublisherEmail string
+param functionWorkerRuntimes array = [
+    'dotnet'
+    'dotnet-isolated'
+]
+param functionOpenApiDocTitles array = [
+    'In-Proc App'
+    'Out-of-Proc App'
+]
 
 module apim './provision-apimanagement.bicep' = {
     name: 'ApiManagement_main'
@@ -17,7 +25,7 @@ module apim './provision-apimanagement.bicep' = {
     }
 }
 
-module fncapps './provision-functionapp.bicep' = [for suffix in suffixes: {
+module fncapps './provision-functionapp.bicep' = [for (suffix, i) in suffixes: {
     name: 'FunctionApp_main_${suffix}'
     dependsOn: [
         apim
@@ -26,5 +34,7 @@ module fncapps './provision-functionapp.bicep' = [for suffix in suffixes: {
         name: name
         suffix: suffix
         location: location
+        functionWorkerRuntime: functionWorkerRuntimes[i]
+        functionOpenApiDocTitle: functionOpenApiDocTitles[i]
     }
 }]

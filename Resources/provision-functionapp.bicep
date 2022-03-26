@@ -84,6 +84,7 @@ param functionWorkerRuntime string = 'dotnet'
     'v7'
 ])
 param functionWorkerVersion string = 'v6.0'
+param functionOpenApiDocTitle string = 'OpenAPI'
 
 module st './storageAccount.bicep' = {
     name: 'StorageAccount_fncapp_${suffix}'
@@ -142,5 +143,6 @@ module fncapp './functionApp.bicep' = {
         functionExtensionVersion: functionExtensionVersion
         functionWorkerRuntime: functionWorkerRuntime
         functionWorkerVersion: functionWorkerVersion
+        functionOpenApiDocTitle: functionOpenApiDocTitle
     }
 }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "4434172343216215845"
+      "templateHash": "8319540809296015085"
     }
   },
   "parameters": {
@@ -99,7 +99,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1318.3566",
-              "templateHash": "9930890881995556432"
+              "templateHash": "811052174973482253"
             }
           },
           "parameters": {
@@ -122,6 +122,20 @@
             },
             "apiManagementPublisherEmail": {
               "type": "string"
+            },
+            "functionWorkerRuntimes": {
+              "type": "array",
+              "defaultValue": [
+                "dotnet",
+                "dotnet-isolated"
+              ]
+            },
+            "functionOpenApiDocTitles": {
+              "type": "array",
+              "defaultValue": [
+                "In-Proc App",
+                "Out-of-Proc App"
+              ]
             }
           },
           "resources": [
@@ -684,6 +698,12 @@
                   },
                   "location": {
                     "value": "[parameters('location')]"
+                  },
+                  "functionWorkerRuntime": {
+                    "value": "[parameters('functionWorkerRuntimes')[copyIndex()]]"
+                  },
+                  "functionOpenApiDocTitle": {
+                    "value": "[parameters('functionOpenApiDocTitles')[copyIndex()]]"
                   }
                 },
                 "template": {
@@ -693,7 +713,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.4.1318.3566",
-                      "templateHash": "2368411750521448563"
+                      "templateHash": "2361274348557778774"
                     }
                   },
                   "parameters": {
@@ -801,6 +821,10 @@
                         "v3.9",
                         "v7"
                       ]
+                    },
+                    "functionOpenApiDocTitle": {
+                      "type": "string",
+                      "defaultValue": "OpenAPI"
                     }
                   },
                   "resources": [
@@ -1248,6 +1272,9 @@
                           },
                           "functionWorkerVersion": {
                             "value": "[parameters('functionWorkerVersion')]"
+                          },
+                          "functionOpenApiDocTitle": {
+                            "value": "[parameters('functionOpenApiDocTitle')]"
                           }
                         },
                         "template": {
@@ -1257,7 +1284,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.4.1318.3566",
-                              "templateHash": "5565830842134716762"
+                              "templateHash": "9028853024448121750"
                             }
                           },
                           "parameters": {
@@ -1332,6 +1359,10 @@
                                 "v3.9",
                                 "v7"
                               ]
+                            },
+                            "functionOpenApiDocTitle": {
+                              "type": "string",
+                              "defaultValue": "OpenAPI"
                             }
                           },
                           "variables": {
@@ -1365,7 +1396,9 @@
                               "powerShellVersion": "[if(and(not(parameters('functionIsLinux')), equals(parameters('functionWorkerRuntime'), 'powershell')), replace(parameters('functionWorkerVersion'), 'v', '~'), '')]",
                               "environment": "[parameters('functionEnvironment')]",
                               "extensionVersion": "[replace(parameters('functionExtensionVersion'), 'v', '~')]",
-                              "workerRuntime": "[parameters('functionWorkerRuntime')]"
+                              "workerRuntime": "[parameters('functionWorkerRuntime')]",
+                              "docTitle": "[parameters('functionOpenApiDocTitle')]",
+                              "hostNames": "[format('https://fncapp-{0}{1}.azurewebsites.net/api', parameters('name'), if(equals(parameters('suffix'), ''), '', format('-{0}', parameters('suffix'))))]"
                             }
                           },
                           "resources": [
@@ -1421,6 +1454,14 @@
                                     {
                                       "name": "WEBSITE_CONTENTSHARE",
                                       "value": "[variables('functionApp').name]"
+                                    },
+                                    {
+                                      "name": "OpenApi__DocTitle",
+                                      "value": "[variables('functionApp').docTitle]"
+                                    },
+                                    {
+                                      "name": "OpenApi__HostNames",
+                                      "value": "[variables('functionApp').hostNames]"
                                     }
                                   ]
                                 }
