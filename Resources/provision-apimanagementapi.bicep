@@ -8,13 +8,13 @@ param apis array = [
         path: 'azip'
         suffix: 'ip'
     }
-    {
-        name: 'azure-oop'
-        displayName: 'Azure OOP'
-        description: 'Azure out-of-proc API'
-        path: 'azoop'
-        suffix: 'oop'
-    }
+    // {
+    //     name: 'azure-oop'
+    //     displayName: 'Azure OOP'
+    //     description: 'Azure out-of-proc API'
+    //     path: 'azoop'
+    //     suffix: 'oop'
+    // }
 ]
 
 module apimapis './apiManagementApi.bicep' = [for api in apis: {
