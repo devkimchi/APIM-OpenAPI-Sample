@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "5845647226993557034"
+      "templateHash": "3102702512118946819"
     }
   },
   "parameters": {
@@ -106,7 +106,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1318.3566",
-              "templateHash": "9320546102610281526"
+              "templateHash": "8152682481856353628"
             }
           },
           "parameters": {
@@ -1545,7 +1545,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.4.1318.3566",
-                      "templateHash": "8900621931460713850"
+                      "templateHash": "14554754765515892612"
                     }
                   },
                   "parameters": {
@@ -1578,8 +1578,8 @@
                       "location": "[parameters('location')]"
                     },
                     "roleAssignment": {
-                      "name": "[guid(resourceGroup().id, 'owner')]",
-                      "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
+                      "name": "[guid(resourceGroup().id, 'contributor')]",
+                      "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
                       "principalType": "[parameters('principalType')]"
                     },
                     "deploymentScript": {
