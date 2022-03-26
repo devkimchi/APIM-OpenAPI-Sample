@@ -12,4 +12,9 @@ This provides sample Azure Functions apps that integrate with Azure API Manageme
 2. Visit the following URLs to check whether all the apps have been properly provisioned and deployed.
 
    * `https://apim-<APP_NAME>.azure-api.net/azip/swagger/ui`
-   * `https://apim-<APP_NAME>.azure-api.net/azoop/swagger/ui`
+   * ~~`https://apim-<APP_NAME>.azure-api.net/azoop/swagger/ui`~~
+
+
+## Known Issues ##
+
+1. Due to the fact that Azure CLI has an error to deploy .NET-based out-of-proc function app, the autopilot feature only takes care of the in-proc function app. However, manual deployment of both in-proc and out-of-proc function apps is fine.
