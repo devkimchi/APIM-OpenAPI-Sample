@@ -44,7 +44,7 @@ param apiMgmtProductName string = 'default'
 
 var apiManagement = {
     groupName: 'rg-${name}'
-    name: 'apim-${name}$'
+    name: 'apim-${name}'
     location: location
     type: apiMgmtApiType
     apiName: apiMgmtApiName
@@ -85,14 +85,40 @@ resource apimapipolicy 'Microsoft.ApiManagement/service/apis/policies@2021-08-01
     }
 }
 
-resource apimproduct 'Microsoft.ApiManagement/service/products@2021-08-01' existing = {
-    name: '${apim.name}/${apiManagement.productName}'
-    scope: resourceGroup(apiManagement.groupName)
-}
+// resource apimproduct 'Microsoft.ApiManagement/service/products@2021-08-01' existing = {
+//     name: '${apim.name}/${apiManagement.productName}'
+//     scope: resourceGroup(apiManagement.groupName)
+// }
 
-resource apimproductapi 'Microsoft.ApiManagement/service/products/apis@2021-08-01' = {
-    name: '${apimproduct.name}/${apiManagement.apiName}'
-}
+// resource apimproductapi 'Microsoft.ApiManagement/service/products/apis@2021-08-01' = {
+//     name: '${apimproduct.name}/${apiManagement.apiName}'
+// }
+
+var operations = [
+    {
+        name: 'swagger-json'
+        displayName: 'swagger.json'
+        method: 'GET'
+        urlTemplate: '/swagger.json'
+    }
+    {
+        name: 'swagger-ui'
+        displayName: 'swagger/ui'
+        method: 'GET'
+        urlTemplate: '/swagger/ui'
+    }
+]
+
+resource apimapioperations 'Microsoft.ApiManagement/service/apis/operations@2021-08-01' = [for op in operations: {
+    name: '${apimapi.name}/${op.name}'
+    properties: {
+        displayName: op.displayName
+        method: op.method
+        urlTemplate: op.urlTemplate
+        templateParameters: []
+        responses: []
+    }
+}]
 
 output id string = apim.id
 output name string = apim.name

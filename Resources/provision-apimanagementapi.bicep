@@ -1,6 +1,5 @@
 param name string
 param location string = resourceGroup().location
-
 param apis array = [
     {
         name: 'azure-ip'
