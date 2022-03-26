@@ -9,7 +9,8 @@ oopzip=$(echo $urls | jq 'select(.name == "oop.zip") | .url' -r)
 
 # Deploy function apps
 ipapp=$(az functionapp deploy -g rg-$RESOURCE_NAME -n fncapp-$RESOURCE_NAME-ip --src-url $ipzip --type zip)
-oopapp=$(az functionapp deploy -g rg-$RESOURCE_NAME -n fncapp-$RESOURCE_NAME-ip --src-url $oopzip --type zip)
+oopapp=$(az functionapp config appsettings set -g rg-$RESOURCE_NAME -n fncapp-$RESOURCE_NAME-ip --settings WEBSITE_RUN_FROM_PACKAGE=$oopzip)
+# oopapp=$(az functionapp deploy -g rg-$RESOURCE_NAME -n fncapp-$RESOURCE_NAME-ip --src-url $oopzip --type zip)
 
 # Provision APIs to APIM
 az deployment group create -n ApiManagement_Api -g rg-$RESOURCE_NAME -u https://raw.githubusercontent.com/devkimchi/APIM-OpenAPI-Sample/main/Resources/provision-apimanagementapi.json -p name=$RESOURCE_NAME
