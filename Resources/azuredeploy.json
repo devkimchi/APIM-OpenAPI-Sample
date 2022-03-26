@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "3102702512118946819"
+      "templateHash": "951465367846646353"
     }
   },
   "parameters": {
@@ -106,7 +106,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1318.3566",
-              "templateHash": "8152682481856353628"
+              "templateHash": "4969119449283476701"
             }
           },
           "parameters": {
@@ -134,7 +134,7 @@
               "type": "array",
               "defaultValue": [
                 "dotnet",
-                "dotnet-isolated"
+                "dotnet"
               ]
             },
             "functionOpenApiDocTitles": {

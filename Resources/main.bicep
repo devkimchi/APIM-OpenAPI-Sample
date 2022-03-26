@@ -8,7 +8,8 @@ param apiManagementPublisherName string
 param apiManagementPublisherEmail string
 param functionWorkerRuntimes array = [
     'dotnet'
-    'dotnet-isolated'
+    // 'dotnet-isolated'
+    'dotnet'
 ]
 param functionOpenApiDocTitles array = [
     'In-Proc App'
