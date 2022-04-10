@@ -4,7 +4,7 @@ param location string = resourceGroup().location
 
 @allowed([
     'Standard_LRS'
-    'Standard_ZRS'    
+    'Standard_ZRS'
     'Standard_GRS'
     'Standard_GZRS'
     'Standard_RAGRS'

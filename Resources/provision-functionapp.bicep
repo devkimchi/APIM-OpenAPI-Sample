@@ -5,7 +5,7 @@ param location string = resourceGroup().location
 // Storage
 @allowed([
     'Standard_LRS'
-    'Standard_ZRS'    
+    'Standard_ZRS'
     'Standard_GRS'
     'Standard_GZRS'
     'Standard_RAGRS'
