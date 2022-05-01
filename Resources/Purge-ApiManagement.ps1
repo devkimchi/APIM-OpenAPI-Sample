@@ -40,7 +40,7 @@ $url = "https://management.azure.com/subscriptions/$($account.id)/providers/Micr
 # Uncomment to debug
 # $url
 
-$apims = $(az rest -m get -u $listurl --query "value" | ConvertFrom-Json)
+$apims = $(az rest -m get -u $url --query "value" | ConvertFrom-Json)
 if ($apims -eq $null) {
     Write-Output "No soft-deleted API Management instance found to purge"
     Exit 0
