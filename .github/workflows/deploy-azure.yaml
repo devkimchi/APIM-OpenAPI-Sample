@@ -1,0 +1,119 @@
+name: 'Build and Deploy to Azure'
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build:
+    name: Build Apps
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repo
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.x'
+
+    - name: Restore NuGet packages
+      shell: bash
+      run: |
+        dotnet restore .
+
+    - name: Build solution
+      shell: bash
+      run: |
+        dotnet build . -c Release
+
+    - name: Create FunctionApp artifact - In-Proc App
+      shell: bash
+      run: |
+        pushd InProcApp
+        dotnet publish . -c Release -o published
+        popd
+
+    - name: Create FunctionApp artifact - Out-of-Proc App
+      shell: bash
+      run: |
+        pushd OutOfProcApp
+        dotnet publish . -c Release -o published
+        popd
+
+    - name: Upload FunctionApp artifact - In-Proc App
+      uses: actions/upload-artifact@v2
+      with:
+        name: ip
+        path: InProcApp/published
+
+    - name: Upload FunctionApp artifact - Out-of-Proc App
+      uses: actions/upload-artifact@v2
+      with:
+        name: oop
+        path: InProcApp/published
+
+  deploy:
+    name: Deploy Apps
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        suffix: [ 'ip', 'oop' ]
+
+    steps:
+    - name: Set environment variables
+      shell: bash
+      run: |
+        echo "RESOURCE_GROUP_NAME=rg-${{ secrets.AZURE_RESOURCE_NAME }}" >> $GITHUB_ENV
+        echo "FUNCTION_APP_NAME=fncapp-${{ secrets.AZURE_RESOURCE_NAME }}-${{ matrix.suffix }}" >> $GITHUB_ENV
+        echo "API_APP_PATH=published/${{ matrix.suffix }}" >> $GITHUB_ENV
+
+    # - name: Check environment variables
+    #   shell: bash
+    #   run: |
+    #     echo $RESOURCE_GROUP_NAME
+    #     echo $FUNCTION_APP_NAME
+    #     echo $API_APP_PATH
+
+    - name: Download FunctionApp artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ matrix.suffix }}
+        path: ${{ env.API_APP_PATH }}
+
+    - name: Login to Azure
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Get FunctionApp publish profile
+      id: publishprofile
+      uses: aliencube/publish-profile-actions@v1
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      with:
+        resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
+        appName: ${{ env.FUNCTION_APP_NAME }}
+
+    - name: Deploy FunctionApp
+      id: fncapp
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.FUNCTION_APP_NAME }}
+        package: ${{ env.API_APP_PATH }}
+        publish-profile: ${{ steps.publishprofile.outputs.profile }}
+
+    - name: Reset FunctionApp publish profile
+      uses: aliencube/publish-profile-actions@v1
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZ_CREDENTIALS }}
+      with:
+        resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
+        appName: ${{ env.FUNCTION_APP_NAME }}
+        reset: true
