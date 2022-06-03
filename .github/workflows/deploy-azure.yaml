@@ -112,7 +112,7 @@ jobs:
     - name: Reset FunctionApp publish profile
       uses: aliencube/publish-profile-actions@v1
       env:
-        AZURE_CREDENTIALS: ${{ secrets.AZ_CREDENTIALS }}
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       with:
         resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
         appName: ${{ env.FUNCTION_APP_NAME }}
