@@ -18,3 +18,4 @@ This provides sample Azure Functions apps that integrate with Azure API Manageme
 ## Known Issues ##
 
 1. Due to the fact that Azure CLI has an error to deploy .NET-based out-of-proc function app, the autopilot feature only takes care of the in-proc function app. However, manual deployment of both in-proc and out-of-proc function apps is fine.
+
